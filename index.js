@@ -1,16 +1,8 @@
-'use strict';
+"use strict";
 
-import React from 'react';
-import {
-    View,
-    Animated,
-    StyleSheet,
-    Easing,
-} from 'react-native';
-import Svg, {
-    G,
-    Path,
-} from 'react-native-svg';
+import React from "react";
+import { View, Animated, StyleSheet, Easing } from "react-native";
+import Svg, { G, Path } from "react-native-svg";
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
@@ -41,7 +33,7 @@ class Wave extends React.PureComponent {
     constructor(props) {
         super(props);
 
-        let {H, waveParams, animated} = this.props;
+        let { H, waveParams, animated } = this.props;
 
         this.state = {
             H,
@@ -68,13 +60,13 @@ class Wave extends React.PureComponent {
     }
 
     render() {
-        let {style} = this.props;
-        let {H, waveParams} = this.state;
+        let { style, disableFill } = this.props;
+        let { H, waveParams } = this.state;
 
         let waves = [];
 
         for (let i = 0; i < waveParams.length; i++) {
-            let {A, T, fill} = waveParams[i];
+            let { A, T, fill } = waveParams[i];
             let translateX = this._animValues[i].interpolate({
                 inputRange: [0, 1],
                 outputRange: [0, -2 * T],
@@ -85,17 +77,22 @@ class Wave extends React.PureComponent {
                     style={{
                         width: 3 * T,
                         height: A + H,
-                        position: 'absolute',
+                        position: "absolute",
                         left: 0,
                         bottom: 0,
                         transform: [{ translateX }],
+                        overflow: "visible",
                     }}
                     preserveAspectRatio="xMinYMin meet"
-                    viewBox={`0 0 ${3 * T} ${A + H}`}
+                    viewBox={`0 0 ${3 * disableFill ? T * 2 : T} ${A + H}`}
                 >
                     <Path
-                        d={`M 0 0 Q ${T / 4} ${-A} ${T / 2} 0 T ${T} 0 T ${3 * T / 2} 0 T ${2 * T} 0 T ${5 * T / 2} 0 T ${3 * T} 0 V ${H} H 0 Z`}
-                        fill={fill}
+                        d={`M 0 0 Q ${T / 4} ${-A} ${T / 2} 0 T ${T} 0 T ${3 *
+                            T /
+                            2} 0 T ${2 * T} 0 T ${5 * T / 2} 0 T ${3 *
+                            T} 0 V ${H} H 0 Z`}
+                        fill={disableFill ? "transparent" : fill}
+                        stroke={fill}
                         transform={`translate(0, ${A})`}
                     />
                 </AnimatedSvg>
@@ -103,11 +100,7 @@ class Wave extends React.PureComponent {
             waves.push(wave);
         }
 
-        return (
-            <View style={style} >
-                {waves}
-            </View>
-        );
+        return <View style={style}>{waves}</View>;
     }
 
     setWaveParams(waveParams) {
@@ -129,35 +122,40 @@ class Wave extends React.PureComponent {
             }
         }
 
-        this.setState({
-            waveParams,
-        }, ()=>{
-            if (animated) {
-                this.startAnim();
-            }
-        });
+        this.setState(
+            {
+                waveParams,
+            },
+            () => {
+                if (animated) {
+                    this.startAnim();
+                }
+            },
+        );
     }
 
     setWaterHeight(H) {
-        this.setState({H});
+        this.setState({ H });
     }
 
     startAnim() {
         this.stopAnim();
 
         const {
-          speed = 5000,
-          speedIncreasePerWave = 1000,
-          easing = 'linear'
-        } = this.props
+            speed = 5000,
+            speedIncreasePerWave = 1000,
+            easing = "linear",
+        } = this.props;
 
         for (let i = 0; i < this._animValues.length; i++) {
-            let anim = Animated.loop(Animated.timing(this._animValues[i], {
-                toValue: 1,
-                duration: speed + i * speedIncreasePerWave,
-                easing: Easing[easing],
-                useNativeDriver: true,
-            }));
+            let anim = Animated.loop(
+                Animated.timing(this._animValues[i], {
+                    toValue: 1,
+                    duration: speed + i * speedIncreasePerWave,
+                    easing: Easing[easing],
+                    useNativeDriver: true,
+                }),
+            );
             this._animations.push(anim);
             anim.start();
         }
@@ -172,6 +170,6 @@ class Wave extends React.PureComponent {
         this._animations = [];
         this._animated = false;
     }
-};
+}
 
 export default Wave;
