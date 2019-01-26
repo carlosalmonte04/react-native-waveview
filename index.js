@@ -4,7 +4,19 @@ import React from "react";
 import { View, Animated, StyleSheet, Easing } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 
-const AnimatedSvg = Animated.createAnimatedComponent(Svg);
+class ClassSvg extends React.PureComponent {
+    render() {
+        const { children } = this.props
+
+        return (
+            <Svg {...this.props}>
+                {children}
+            </Svg>
+        )
+    }
+}
+
+const AnimatedSvg = Animated.createAnimatedComponent(ClassSvg);
 
 /**
  * ---------+------------------------+
